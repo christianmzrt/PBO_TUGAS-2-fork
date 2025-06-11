@@ -1,9 +1,12 @@
 package Tugas2;
 
+import Service.VillaService;
+import Response.ApiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import model.Villa;
 
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
@@ -11,10 +14,12 @@ import java.net.URI;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Server {
     private HttpServer server;
+    private ObjectMapper objectMapper;
 
     private class RequestHandler implements HttpHandler {
         public void handle(HttpExchange httpExchange) {
@@ -32,6 +37,7 @@ public class Server {
         Request req = new Request(httpExchange);
         Response res = new Response(httpExchange);
 
+        ObjectMapper objectMapper = new ObjectMapper();
         URI uri = httpExchange.getRequestURI();
         String method = httpExchange.getRequestMethod();
         String path = uri.getPath();
@@ -39,33 +45,17 @@ public class Server {
 
         try {
             if (method.equals("GET") && path.equals("/villas")) {
-                try (Connection conn = DBConnection.getConnection()) {
-                    String sql = "SELECT * FROM villas";
-                    var stmt = conn.createStatement();
-                    var rs = stmt.executeQuery(sql);
-
-                    ArrayList<Map<String, Object>> villas = new ArrayList<>();
-                    while (rs.next()) {
-                        Map<String, Object> villa = new HashMap<>();
-                        villa.put("id", rs.getInt("id"));
-                        villa.put("name", rs.getString("name"));
-                        villa.put("description", rs.getString("description"));
-                        villa.put("address", rs.getString("address"));
-                        villas.add(villa);
-                    }
-
-                    Map<String, Object> resMap = new HashMap<>();
-                    resMap.put("villas", villas);
-
-                    ObjectMapper mapper = new ObjectMapper();
-                    String resJson = mapper.writeValueAsString(resMap);
-
-                    res.setBody(resJson);
+                try {
+                    List<Villa> villas = VillaService.getAllVillas();
+                    ApiResponse<List<Villa>> response = ApiResponse.success("Data villa berhasil diambil", villas);
+                    String responseJson = objectMapper.writeValueAsString(response);
+                    res.setBody(responseJson);
                     res.send(HttpURLConnection.HTTP_OK);
 
                 } catch (Exception e) {
                     e.printStackTrace();
-                    res.setBody("{\"error\":\"Gagal mengambil data\"}");
+                    ApiResponse<Object> errorResponse = ApiResponse.error("Gagal mengambil data villa");
+                    res.setBody(objectMapper.writeValueAsString(errorResponse));
                     res.send(HttpURLConnection.HTTP_INTERNAL_ERROR);
                 }
             }
@@ -183,7 +173,6 @@ public class Server {
         }
 
         if (!res.isSent()) {
-            ObjectMapper objectMapper = new ObjectMapper();
             Map<String, Object> resJsonMap = new HashMap<>();
             resJsonMap.put("message", "Request Success");
 
