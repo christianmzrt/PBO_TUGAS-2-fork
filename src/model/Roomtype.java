@@ -151,4 +151,26 @@ public class Roomtype {
     public void setHasFridge(boolean hasFridge) {
         this.hasFridge = hasFridge;
     }
+
+    @Override
+    public String toString() {
+        return "Roomtype{" +
+                "id=" + id +
+                ", villa=" + villa +
+                ", name='" + name + '\'' +
+                ", quantity=" + quantity +
+                ", capacity=" + capacity +
+                ", price=" + price +
+                ", bedSize='" + bedSize + '\'' +
+                ", hasDesk=" + hasDesk +
+                ", hasAc=" + hasAc +
+                ", hasTv=" + hasTv +
+                ", hasWifi=" + hasWifi +
+                ", hasShower=" + hasShower +
+                ", hasHotwater=" + hasHotwater +
+                ", hasFridge=" + hasFridge +
+                '}';
+    }
+
 }
+
