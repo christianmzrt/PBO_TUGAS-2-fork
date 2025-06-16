@@ -41,23 +41,15 @@ public class Server {
         System.out.printf("path: %s | method: %s\n", path, method);
 
         try {
-            // Gunakan handler modular
-//            if (VillaHandler.handle(httpExchange, method, path, req.getJSON(), res)) {
-//                return;
-//            }
-
             Map<String, Object> requestBody = null;
             if ("POST".equalsIgnoreCase(method) || "PUT".equalsIgnoreCase(method)) {
                 requestBody = req.getJSON();
-                System.out.println("Parsed JSON: " + requestBody);
             }
 
             if (VillaHandler.handle(httpExchange, method, path, requestBody, res)) {
                 return;
             }
-
-
-            // Jika tidak ada route yang cocok
+            
             res.setBody("{\"error\": \"Endpoint tidak ditemukan\"}");
             res.send(HttpURLConnection.HTTP_NOT_FOUND);
 

@@ -62,7 +62,7 @@ public class VillaHandler {
             }
 
             // PUT /villas (ambil id dari body JSON)
-            if (method.equals("PUT") && path.equals("/villas")) {
+            if (method.equals("PUT") && path.matches("/villas/\\d+")) {
                 if (reqJson != null) {
                     Integer villaId = (Integer) reqJson.get("id");
                     String name = (String) reqJson.get("name");
