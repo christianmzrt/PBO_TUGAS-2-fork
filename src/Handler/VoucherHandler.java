@@ -52,7 +52,7 @@ public class VoucherHandler {
                 return handleDeleteVoucher(id, response);
             }
 
-            return false; // Not handled by this handler
+            return false;
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -114,7 +114,6 @@ public class VoucherHandler {
 
     private static boolean handleCreateVoucher(Map<String, Object> requestBody, Response response) throws Exception {
         try {
-            // Validate request body
             if (requestBody == null || requestBody.isEmpty()) {
                 ApiResponse<Object> errorResponse = ApiResponse.error("Request body is required");
                 response.setBody(objectMapper.writeValueAsString(errorResponse));
@@ -122,7 +121,6 @@ public class VoucherHandler {
                 return true;
             }
 
-            // Validate required fields
             String validationError = validateVoucherData(requestBody, false);
             if (validationError != null) {
                 ApiResponse<Object> errorResponse = ApiResponse.error(validationError);
@@ -131,7 +129,6 @@ public class VoucherHandler {
                 return true;
             }
 
-            // Check if voucher code already exists
             String code = (String) requestBody.get("code");
             if (voucherService.isVoucherCodeExists(code, null)) {
                 ApiResponse<Object> errorResponse = ApiResponse.error("Voucher code already exists");
@@ -140,10 +137,8 @@ public class VoucherHandler {
                 return true;
             }
 
-            // Create voucher object
             Voucher voucher = createVoucherFromRequestBody(requestBody);
 
-            // Save voucher
             Voucher createdVoucher = voucherService.createVoucher(voucher);
 
             ApiResponse<Map<String, Object>> apiResponse =
@@ -161,7 +156,6 @@ public class VoucherHandler {
 
     private static boolean handleUpdateVoucher(int id, Map<String, Object> requestBody, Response response) throws Exception {
         try {
-            // Check if voucher exists
             Voucher existingVoucher = voucherService.getVoucherById(id);
             if (existingVoucher == null) {
                 ApiResponse<Object> errorResponse = ApiResponse.error("Voucher with ID " + id + " not found");
@@ -170,7 +164,6 @@ public class VoucherHandler {
                 return true;
             }
 
-            // Validate request body
             if (requestBody == null || requestBody.isEmpty()) {
                 ApiResponse<Object> errorResponse = ApiResponse.error("Request body is required");
                 response.setBody(objectMapper.writeValueAsString(errorResponse));
@@ -178,7 +171,6 @@ public class VoucherHandler {
                 return true;
             }
 
-            // Validate required fields
             String validationError = validateVoucherData(requestBody, true);
             if (validationError != null) {
                 ApiResponse<Object> errorResponse = ApiResponse.error(validationError);
@@ -187,7 +179,6 @@ public class VoucherHandler {
                 return true;
             }
 
-            // Check if voucher code already exists (excluding current voucher)
             String code = (String) requestBody.get("code");
             if (voucherService.isVoucherCodeExists(code, id)) {
                 ApiResponse<Object> errorResponse = ApiResponse.error("Voucher code already exists");
@@ -196,10 +187,8 @@ public class VoucherHandler {
                 return true;
             }
 
-            // Create updated voucher object
             Voucher voucher = createVoucherFromRequestBody(requestBody);
 
-            // Update voucher
             Voucher updatedVoucher = voucherService.updateVoucher(id, voucher);
 
             ApiResponse<Map<String, Object>> apiResponse =
@@ -217,7 +206,6 @@ public class VoucherHandler {
 
     private static boolean handleDeleteVoucher(int id, Response response) throws Exception {
         try {
-            // Check if voucher exists
             Voucher existingVoucher = voucherService.getVoucherById(id);
             if (existingVoucher == null) {
                 ApiResponse<Object> errorResponse = ApiResponse.error("Voucher with ID " + id + " not found");
@@ -226,7 +214,6 @@ public class VoucherHandler {
                 return true;
             }
 
-            // Delete voucher
             boolean deleted = voucherService.deleteVoucher(id);
 
             if (deleted) {
@@ -270,7 +257,6 @@ public class VoucherHandler {
             return "Voucher end date is required";
         }
 
-        // Validate code format
         String code = (String) requestBody.get("code");
         if (code.trim().isEmpty()) {
             return "Voucher code cannot be empty";
@@ -280,13 +266,11 @@ public class VoucherHandler {
             return "Voucher code must be between 3 and 20 characters";
         }
 
-        // Validate description
         String description = (String) requestBody.get("description");
         if (description.trim().isEmpty()) {
             return "Voucher description cannot be empty";
         }
 
-        // Validate discount
         Object discountObj = requestBody.get("discount");
         double discount;
         try {
@@ -305,7 +289,6 @@ public class VoucherHandler {
             return "Discount must be between 0 and 100";
         }
 
-        // Validate date format and logic
         try {
             String startDateStr = (String) requestBody.get("start_date");
             String endDateStr = (String) requestBody.get("end_date");
@@ -321,17 +304,15 @@ public class VoucherHandler {
             return "Invalid date format. Use yyyy-MM-dd HH:mm:ss format";
         }
 
-        return null; // No validation errors
+        return null;
     }
 
     private static Voucher createVoucherFromRequestBody(Map<String, Object> requestBody) {
         Voucher voucher = new Voucher();
 
-        // Set basic fields
         voucher.setCode(((String) requestBody.get("code")).trim());
         voucher.setDescription(((String) requestBody.get("description")).trim());
 
-        // Handle discount conversion
         Object discountObj = requestBody.get("discount");
         if (discountObj instanceof Integer) {
             voucher.setDiscount(((Integer) discountObj).doubleValue());
@@ -341,7 +322,6 @@ public class VoucherHandler {
             voucher.setDiscount(Double.parseDouble(discountObj.toString()));
         }
 
-        // Parse dates
         String startDateStr = (String) requestBody.get("start_date");
         String endDateStr = (String) requestBody.get("end_date");
 

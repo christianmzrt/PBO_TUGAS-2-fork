@@ -29,7 +29,6 @@ public class CustomerHandler {
         ObjectMapper objectMapper = new ObjectMapper();
 
         try {
-            // GET /customers - Daftar semua customer
             if (method.equals("GET") && path.equals("/customers")) {
                 List<Customer> customers = CustomerService.getAllCustomers();
                 ApiResponse<List<Customer>> response = ApiResponse.success("Data customer berhasil diambil", customers);
@@ -38,7 +37,6 @@ public class CustomerHandler {
                 return true;
             }
 
-            // GET /customers/{id} - Detail customer
             if (method.equals("GET") && path.matches("/customers/\\d+")) {
                 int customerId = Integer.parseInt(path.split("/")[2]);
 
@@ -62,7 +60,6 @@ public class CustomerHandler {
                 }
             }
 
-            // GET /customers/{id}/bookings - Daftar booking customer
             if (method.equals("GET") && path.matches("/customers/\\d+/bookings")) {
                 int customerId = Integer.parseInt(path.split("/")[2]);
 
@@ -80,7 +77,6 @@ public class CustomerHandler {
                 }
             }
 
-            // GET /customers/{id}/reviews - Daftar review customer
             if (method.equals("GET") && path.matches("/customers/\\d+/reviews")) {
                 int customerId = Integer.parseInt(path.split("/")[2]);
 
@@ -98,14 +94,12 @@ public class CustomerHandler {
                 }
             }
 
-            // POST /customers - Registrasi customer baru
             if (method.equals("POST") && path.equals("/customers")) {
                 if (reqJson != null) {
                     String name = (String) reqJson.get("name");
                     String email = (String) reqJson.get("email");
                     String phone = (String) reqJson.get("phone");
 
-                    // Validasi data lengkap
                     if (name == null || email == null || phone == null ||
                             name.trim().isEmpty() || email.trim().isEmpty() || phone.trim().isEmpty()) {
                         res.setBody("{\"error\":\"Semua data harus lengkap (name, email, phone)\"}");
@@ -113,14 +107,12 @@ public class CustomerHandler {
                         return true;
                     }
 
-                    // Validasi format email
                     if (!EMAIL_PATTERN.matcher(email).matches()) {
                         res.setBody("{\"error\":\"Format email tidak valid\"}");
                         res.send(HttpURLConnection.HTTP_BAD_REQUEST);
                         return true;
                     }
 
-                    // Validasi format nomor telepon
                     if (!PHONE_PATTERN.matcher(phone).matches()) {
                         res.setBody("{\"error\":\"Format nomor telepon tidak valid (gunakan format Indonesia)\"}");
                         res.send(HttpURLConnection.HTTP_BAD_REQUEST);
@@ -147,7 +139,6 @@ public class CustomerHandler {
                 }
             }
 
-            // PUT /customers/{id} - Update data customer
             if (method.equals("PUT") && path.matches("/customers/\\d+")) {
                 int customerId = Integer.parseInt(path.split("/")[2]);
 
@@ -156,7 +147,6 @@ public class CustomerHandler {
                     String email = (String) reqJson.get("email");
                     String phone = (String) reqJson.get("phone");
 
-                    // Validasi data lengkap
                     if (name == null || email == null || phone == null ||
                             name.trim().isEmpty() || email.trim().isEmpty() || phone.trim().isEmpty()) {
                         res.setBody("{\"error\":\"Semua data harus lengkap (name, email, phone)\"}");
@@ -164,14 +154,12 @@ public class CustomerHandler {
                         return true;
                     }
 
-                    // Validasi format email
                     if (!EMAIL_PATTERN.matcher(email).matches()) {
                         res.setBody("{\"error\":\"Format email tidak valid\"}");
                         res.send(HttpURLConnection.HTTP_BAD_REQUEST);
                         return true;
                     }
 
-                    // Validasi format nomor telepon
                     if (!PHONE_PATTERN.matcher(phone).matches()) {
                         res.setBody("{\"error\":\"Format nomor telepon tidak valid (gunakan format Indonesia)\"}");
                         res.send(HttpURLConnection.HTTP_BAD_REQUEST);
@@ -203,7 +191,6 @@ public class CustomerHandler {
                 }
             }
 
-            // POST /customers/{id}/bookings - Customer melakukan booking
             if (method.equals("POST") && path.matches("/customers/\\d+/bookings")) {
                 int customerId = Integer.parseInt(path.split("/")[2]);
 
@@ -213,7 +200,6 @@ public class CustomerHandler {
                     String checkoutDate = (String) reqJson.get("checkout_date");
                     Integer voucherId = (Integer) reqJson.get("voucher"); // optional
 
-                    // Validasi data wajib
                     if (roomTypeId == null || checkinDate == null || checkoutDate == null ||
                             checkinDate.trim().isEmpty() || checkoutDate.trim().isEmpty()) {
                         res.setBody("{\"error\":\"Data booking tidak lengkap (room_type, checkin_date, checkout_date wajib)\"}");
@@ -247,7 +233,6 @@ public class CustomerHandler {
                 }
             }
 
-            // POST /customers/{id}/bookings/{booking_id}/reviews - Customer memberikan review
             if (method.equals("POST") && path.matches("/customers/\\d+/bookings/\\d+/reviews")) {
                 int customerId = Integer.parseInt(path.split("/")[2]);
                 int bookingId = Integer.parseInt(path.split("/")[4]);
@@ -257,7 +242,6 @@ public class CustomerHandler {
                     String title = (String) reqJson.get("title");
                     String content = (String) reqJson.get("content");
 
-                    // Validasi data lengkap
                     if (star == null || title == null || content == null ||
                             title.trim().isEmpty() || content.trim().isEmpty()) {
                         res.setBody("{\"error\":\"Semua data review harus lengkap (star, title, content)\"}");
@@ -265,7 +249,6 @@ public class CustomerHandler {
                         return true;
                     }
 
-                    // Validasi rating (1-5)
                     if (star < 1 || star > 5) {
                         res.setBody("{\"error\":\"Rating harus antara 1-5\"}");
                         res.send(HttpURLConnection.HTTP_BAD_REQUEST);
@@ -326,6 +309,6 @@ public class CustomerHandler {
             }
         }
 
-        return false; // Jika tidak cocok dengan path-method customer
+        return false;
     }
 }

@@ -85,7 +85,6 @@ public class CustomerService {
 
     public static void createCustomer(String name, String email, String phone) throws SQLException {
         try (Connection conn = DBConnection.getConnection()) {
-            // Cek apakah email sudah ada
             String checkSql = "SELECT COUNT(*) FROM customers WHERE email = ?";
             var checkStmt = conn.prepareStatement(checkSql);
             checkStmt.setString(1, email);
@@ -106,7 +105,6 @@ public class CustomerService {
 
     public static boolean updateCustomer(int customerId, String name, String email, String phone) throws SQLException {
         try (Connection conn = DBConnection.getConnection()) {
-            // Cek apakah email sudah digunakan customer lain
             String checkSql = "SELECT COUNT(*) FROM customers WHERE email = ? AND id != ?";
             var checkStmt = conn.prepareStatement(checkSql);
             checkStmt.setString(1, email);
@@ -131,7 +129,6 @@ public class CustomerService {
 
     public static int createBooking(int customerId, int roomTypeId, String checkinDate,
                                     String checkoutDate, Integer voucherId) throws SQLException {
-        // Validasi format tanggal
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime checkin, checkout;
 
@@ -142,13 +139,11 @@ public class CustomerService {
             throw new IllegalArgumentException("Format tanggal harus: YYYY-MM-DD HH:mm:ss");
         }
 
-        // Validasi checkout setelah checkin
         if (!checkout.isAfter(checkin)) {
             throw new IllegalArgumentException("Tanggal checkout harus setelah checkin");
         }
 
         try (Connection conn = DBConnection.getConnection()) {
-            // Cek customer ada
             String checkCustomerSql = "SELECT COUNT(*) FROM customers WHERE id = ?";
             var checkCustomerStmt = conn.prepareStatement(checkCustomerSql);
             checkCustomerStmt.setInt(1, customerId);
@@ -158,7 +153,6 @@ public class CustomerService {
                 throw new IllegalArgumentException("Customer tidak ditemukan");
             }
 
-            // Cek room type ada dan ambil harga
             String checkRoomSql = "SELECT price FROM room_types WHERE id = ?";
             var checkRoomStmt = conn.prepareStatement(checkRoomSql);
             checkRoomStmt.setInt(1, roomTypeId);
@@ -171,7 +165,6 @@ public class CustomerService {
             int roomPrice = roomRs.getInt("price");
             int finalPrice = roomPrice;
 
-            // Cek voucher jika ada
             if (voucherId != null) {
                 String checkVoucherSql = "SELECT discount, start_date, end_date FROM vouchers WHERE id = ?";
                 var checkVoucherStmt = conn.prepareStatement(checkVoucherSql);
@@ -194,7 +187,6 @@ public class CustomerService {
                 }
             }
 
-            // Insert booking
             String insertSql = "INSERT INTO bookings (customer, room_type, checkin_date, checkout_date, price, voucher, final_price) " +
                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
             var insertStmt = conn.prepareStatement(insertSql, Statement.RETURN_GENERATED_KEYS);
@@ -223,7 +215,6 @@ public class CustomerService {
 
     public static void createReview(int customerId, int bookingId, int star, String title, String content) throws SQLException {
         try (Connection conn = DBConnection.getConnection()) {
-            // Cek apakah booking ini milik customer dan sudah selesai
             String checkBookingSql = "SELECT customer, has_checkedout FROM bookings WHERE id = ?";
             var checkBookingStmt = conn.prepareStatement(checkBookingSql);
             checkBookingStmt.setInt(1, bookingId);
@@ -241,7 +232,6 @@ public class CustomerService {
                 throw new IllegalArgumentException("Review hanya bisa diberikan setelah checkout");
             }
 
-            // Cek apakah sudah ada review untuk booking ini
             String checkReviewSql = "SELECT COUNT(*) FROM reviews WHERE booking = ?";
             var checkReviewStmt = conn.prepareStatement(checkReviewSql);
             checkReviewStmt.setInt(1, bookingId);
@@ -251,7 +241,6 @@ public class CustomerService {
                 throw new IllegalArgumentException("Review untuk booking ini sudah ada");
             }
 
-            // Insert review
             String insertSql = "INSERT INTO reviews (booking, star, title, content) VALUES (?, ?, ?, ?)";
             var insertStmt = conn.prepareStatement(insertSql);
             insertStmt.setInt(1, bookingId);
