@@ -5,6 +5,7 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import Handler.VillaHandler;
+import Handler.CustomerHandler;
 
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
@@ -49,6 +50,13 @@ public class Server {
             if (VillaHandler.handle(httpExchange, method, path, requestBody, res)) {
                 return;
             }
+
+            if (CustomerHandler.handle(httpExchange, method, path, requestBody, res)) {
+                return;
+            }
+
+            res.setBody("{\"error\": \"Endpoint tidak ditemukan\"}");
+            res.send(HttpURLConnection.HTTP_NOT_FOUND);
             
             res.setBody("{\"error\": \"Endpoint tidak ditemukan\"}");
             res.send(HttpURLConnection.HTTP_NOT_FOUND);
