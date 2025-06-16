@@ -6,6 +6,7 @@ import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import Handler.VillaHandler;
 import Handler.CustomerHandler;
+import Handler.VoucherHandler;
 
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
@@ -52,6 +53,10 @@ public class Server {
             }
 
             if (CustomerHandler.handle(httpExchange, method, path, requestBody, res)) {
+                return;
+            }
+
+            if (VoucherHandler.handle(httpExchange, method, path, requestBody, res)) {
                 return;
             }
 
