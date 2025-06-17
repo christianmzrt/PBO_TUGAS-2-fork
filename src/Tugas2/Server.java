@@ -50,6 +50,8 @@ public class Server {
 
             if (VillaHandler.handle(httpExchange, method, path, requestBody, res)) {
                 return;
+            }else if(CustomerHandler.handle(httpExchange, method, path, requestBody, res)){
+                return;
             }
 
             res.setBody("{\"error\": \"Endpoint tidak ditemukan\"}");

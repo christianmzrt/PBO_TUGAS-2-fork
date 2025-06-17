@@ -198,7 +198,7 @@ public class CustomerHandler {
                     Integer roomTypeId = (Integer) reqJson.get("room_type");
                     String checkinDate = (String) reqJson.get("checkin_date");
                     String checkoutDate = (String) reqJson.get("checkout_date");
-                    Integer voucherId = (Integer) reqJson.get("voucher"); // optional
+                    Integer voucherId = (Integer) reqJson.get("voucher");
 
                     if (roomTypeId == null || checkinDate == null || checkoutDate == null ||
                             checkinDate.trim().isEmpty() || checkoutDate.trim().isEmpty()) {
