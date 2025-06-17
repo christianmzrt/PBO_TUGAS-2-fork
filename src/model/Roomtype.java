@@ -16,10 +16,8 @@ public class Roomtype {
     private boolean hasHotwater;
     private boolean hasFridge;
 
-    // Constructor kosong (penting untuk Jackson deserialization)
     public Roomtype() {}
 
-    // Constructor lengkap
     public Roomtype(int id, int villa, String name, int quantity, int capacity, int price, String bedSize,
                     boolean hasDesk, boolean hasAc, boolean hasTv, boolean hasWifi,
                     boolean hasShower, boolean hasHotwater, boolean hasFridge) {

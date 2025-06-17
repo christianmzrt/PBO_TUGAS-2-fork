@@ -143,7 +143,7 @@ public class VillaHandler {
                     int villaId = Integer.parseInt(path.split("/")[2]);
 
                     Roomtype roomtype = new Roomtype();
-                    roomtype.setVilla(villaId); // dari path parameter
+                    roomtype.setVilla(villaId);
 
                     roomtype.setName((String) reqJson.get("name"));
                     roomtype.setQuantity(((Number) reqJson.get("quantity")).intValue());
