@@ -4,7 +4,9 @@ import Service.VillaService;
 import Response.ApiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.Request;
 import model.Villa;
+import model.Roomtype;
 import Tugas2.DBConnection;
 import Tugas2.Response;
 
@@ -131,6 +133,65 @@ public class VillaHandler {
                 } catch (Exception e) {
                     e.printStackTrace();
                     res.setBody("{\"error\":\"Gagal menghapus villa\"}");
+                    res.send(HttpURLConnection.HTTP_INTERNAL_ERROR);
+                    return true;
+                }
+            }
+
+            if ("POST".equalsIgnoreCase(method) && path.matches("^/villas/\\d+/roomtype$")) {
+                try {
+                    int villaId = Integer.parseInt(path.split("/")[2]);
+
+                    Roomtype roomtype = new Roomtype();
+                    roomtype.setVilla(villaId); // dari path parameter
+
+                    roomtype.setName((String) reqJson.get("name"));
+                    roomtype.setQuantity(((Number) reqJson.get("quantity")).intValue());
+                    roomtype.setCapacity(((Number) reqJson.get("capacity")).intValue());
+                    roomtype.setPrice(((Number) reqJson.get("price")).intValue());
+                    roomtype.setBedSize((String) reqJson.get("bedSize"));
+                    roomtype.setHasDesk(Boolean.TRUE.equals(reqJson.get("hasDesk")));
+                    roomtype.setHasAc(Boolean.TRUE.equals(reqJson.get("hasAc")));
+                    roomtype.setHasTv(Boolean.TRUE.equals(reqJson.get("hasTv")));
+                    roomtype.setHasWifi(Boolean.TRUE.equals(reqJson.get("hasWifi")));
+                    roomtype.setHasShower(Boolean.TRUE.equals(reqJson.get("hasShower")));
+                    roomtype.setHasHotwater(Boolean.TRUE.equals(reqJson.get("hasHotwater")));
+                    roomtype.setHasFridge(Boolean.TRUE.equals(reqJson.get("hasFridge")));
+
+
+                    try (Connection conn = DBConnection.getConnection()) {
+                        String sql = """
+                        INSERT INTO room_types (villa, name, quantity, capacity, price, bed_size,
+                        has_desk, has_ac, has_tv, has_wifi, has_shower, has_hotwater, has_fridge)
+                        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    """;
+
+                        var pstmt = conn.prepareStatement(sql);
+                        pstmt.setInt(1, roomtype.getVilla());
+                        pstmt.setString(2, roomtype.getName());
+                        pstmt.setInt(3, roomtype.getQuantity());
+                        pstmt.setInt(4, roomtype.getCapacity());
+                        pstmt.setInt(5, roomtype.getPrice());
+                        pstmt.setString(6, roomtype.getBedSize());
+                        pstmt.setBoolean(7, roomtype.isHasDesk());
+                        pstmt.setBoolean(8, roomtype.isHasAc());
+                        pstmt.setBoolean(9, roomtype.isHasTv());
+                        pstmt.setBoolean(10, roomtype.isHasWifi());
+                        pstmt.setBoolean(11, roomtype.isHasShower());
+                        pstmt.setBoolean(12, roomtype.isHasHotwater());
+                        pstmt.setBoolean(13, roomtype.isHasFridge());
+                        pstmt.executeUpdate();
+
+                        Map<String, Object> response = new HashMap<>();
+                        response.put("message", "Roomtype berhasil ditambahkan");
+                        res.setBody(objectMapper.writeValueAsString(response));
+                        res.send(HttpURLConnection.HTTP_CREATED);
+                        return true;
+                    }
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    res.setBody("{\"error\":\"Gagal memproses roomtype\"}");
                     res.send(HttpURLConnection.HTTP_INTERNAL_ERROR);
                     return true;
                 }

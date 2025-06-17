@@ -49,7 +49,7 @@ public class Server {
             if (VillaHandler.handle(httpExchange, method, path, requestBody, res)) {
                 return;
             }
-            
+
             res.setBody("{\"error\": \"Endpoint tidak ditemukan\"}");
             res.send(HttpURLConnection.HTTP_NOT_FOUND);
 
