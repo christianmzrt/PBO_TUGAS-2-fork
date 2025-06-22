@@ -1,5 +1,6 @@
 package Handler;
 
+import Service.RoomTypeService;
 import Service.VillaService;
 import Response.ApiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -195,6 +196,15 @@ public class VillaHandler {
                     res.send(HttpURLConnection.HTTP_INTERNAL_ERROR);
                     return true;
                 }
+            }
+
+            if (method.equals("GET") && path.matches("^/villas/\\d+/roomtype$")) {
+                int villaId = Integer.parseInt(path.split("/")[2]);
+                List<Roomtype> roomtype = RoomTypeService.getAllRoomTypes(villaId);
+                ApiResponse<List<Roomtype>> response = ApiResponse.success("Data villa berhasil diambil", roomtype);
+                res.setBody(objectMapper.writeValueAsString(response));
+                res.send(HttpURLConnection.HTTP_OK);
+                return true;
             }
 
         } catch (Exception e) {

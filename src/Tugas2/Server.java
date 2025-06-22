@@ -52,6 +52,8 @@ public class Server {
                 return;
             }else if(CustomerHandler.handle(httpExchange, method, path, requestBody, res)){
                 return;
+            }else if(VoucherHandler.handle(httpExchange, method, path, requestBody, res)){
+                return;
             }
 
             res.setBody("{\"error\": \"Endpoint tidak ditemukan\"}");
