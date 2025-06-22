@@ -4,8 +4,10 @@ import Service.RoomTypeService;
 import Service.VillaService;
 import Response.ApiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.Request;
+import model.Booking;
 import model.Villa;
 import model.Roomtype;
 import Tugas2.DBConnection;
@@ -20,6 +22,8 @@ import java.util.Map;
 public class VillaHandler {
     public static boolean handle(HttpExchange httpExchange, String method, String path, Map<String, Object> reqJson, Response res) {
         ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
         try {
             // GET /villas
@@ -202,6 +206,15 @@ public class VillaHandler {
                 int villaId = Integer.parseInt(path.split("/")[2]);
                 List<Roomtype> roomtype = RoomTypeService.getAllRoomTypes(villaId);
                 ApiResponse<List<Roomtype>> response = ApiResponse.success("Data villa berhasil diambil", roomtype);
+                res.setBody(objectMapper.writeValueAsString(response));
+                res.send(HttpURLConnection.HTTP_OK);
+                return true;
+            }
+
+            if (method.equals("GET") && path.matches("^/villas/\\d+/bookings$")) {
+                int villaId = Integer.parseInt(path.split("/")[2]);
+                List<Booking> bookedRooms = VillaService.getAllBookedsRoom(villaId);
+                ApiResponse<List<Booking>> response = ApiResponse.success("Data villa berhasil diambil", bookedRooms);
                 res.setBody(objectMapper.writeValueAsString(response));
                 res.send(HttpURLConnection.HTTP_OK);
                 return true;

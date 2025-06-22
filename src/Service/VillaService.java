@@ -1,6 +1,7 @@
 package Service;
 
 import Tugas2.DBConnection;
+import model.Booking;
 import model.Villa;
 
 import java.sql.Connection;
@@ -27,6 +28,23 @@ public class VillaService {
         return villas;
     }
 
+    public static List<Booking> getAllBookedsRoom(int id) throws SQLException {
+        List<Booking> bookedRooms = new ArrayList<>();
+
+        try (Connection conn = DBConnection.getConnection()) {
+            String sql = "SELECT b.* FROM bookings b JOIN room_types rt ON b.room_type = rt.id WHERE rt.villa ="+ id;
+            var stmt = conn.createStatement();
+            var rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                Booking bookedRoom = mapResultSetToBooking(rs);
+                bookedRooms.add(bookedRoom);
+            }
+        }
+
+        return bookedRooms;
+    }
+
     private static Villa mapResultSetToVilla(ResultSet rs) throws SQLException {
         return new Villa(
                 rs.getInt("id"),
@@ -35,4 +53,25 @@ public class VillaService {
                 rs.getString("address")
         );
     }
+
+    private static Booking mapResultSetToBooking(ResultSet rs) throws SQLException {
+        Booking booking = new Booking();
+        booking.setId(rs.getInt("id"));
+        booking.setCustomer(rs.getInt("customer"));
+        booking.setRoomType(rs.getInt("room_type"));
+        booking.setCheckinDate(rs.getTimestamp("checkin_date").toLocalDateTime());
+        booking.setCheckoutDate(rs.getTimestamp("checkout_date").toLocalDateTime());
+        booking.setPrice(rs.getInt("price"));
+
+        int voucherId = rs.getInt("voucher");
+        booking.setVoucher(rs.wasNull() ? null : voucherId);
+
+        booking.setFinalPrice(rs.getInt("final_price"));
+        booking.setPaymentStatus(rs.getString("payment_status"));
+        booking.setHasCheckedin(rs.getBoolean("has_checkedin"));
+        booking.setHasCheckedout(rs.getBoolean("has_checkedout"));
+
+        return booking;
+    }
+
 }
