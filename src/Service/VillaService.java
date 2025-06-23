@@ -30,6 +30,23 @@ public class VillaService {
         return villas;
     }
 
+    public static List<Villa> getVillasById(int villaId) throws SQLException {
+        List<Villa> villas = new ArrayList<>();
+
+        try (Connection conn = DBConnection.getConnection()) {
+            String sql = "SELECT * FROM villas WHERE id="+ villaId;
+            var stmt = conn.createStatement();
+            var rs = stmt.executeQuery(sql);
+
+            while (rs.next()) {
+                Villa villa = mapResultSetToVilla(rs);
+                villas.add(villa);
+            }
+        }
+
+        return villas;
+    }
+
     public static List<Booking> getAllBookedsRoom(int id) throws SQLException {
         List<Booking> bookedRooms = new ArrayList<>();
 

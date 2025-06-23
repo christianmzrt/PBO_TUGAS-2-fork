@@ -36,6 +36,20 @@ public class VillaHandler {
                 return true;
             }
 
+            if (method.equals("GET") && path.matches("/villas/\\d+")) {
+                int villaId = Integer.parseInt(path.split("/")[2]);
+                List<Villa> villas = VillaService.getVillasById(villaId);
+                if(villas.isEmpty()){
+                    res.setBody("{\"error\":\"Villa tidak ditemukan\"}");
+                    res.send(HttpURLConnection.HTTP_NOT_FOUND);
+                }else {
+                    ApiResponse<List<Villa>> response = ApiResponse.success("Data villa berhasil diambil", villas);
+                    res.setBody(objectMapper.writeValueAsString(response));
+                    res.send(HttpURLConnection.HTTP_OK);
+                }
+                return true;
+            }
+
             // POST /villas
             if (method.equals("POST") && path.equals("/villas")) {
                 if (reqJson != null) {
