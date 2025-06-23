@@ -241,6 +241,35 @@ public class VillaHandler {
                 }
             }
 
+            if (method.equals("DELETE") && path.matches("/villas/\\d+/rooms/\\d+")) {
+                int villaId = Integer.parseInt(path.split("/")[2]);
+                int roomsId = Integer.parseInt(path.split("/")[4]);
+
+                try (Connection conn = DBConnection.getConnection()) {
+                    String sql = "DELETE FROM room_types WHERE id = ? AND villa = ?";
+                    var pstmt = conn.prepareStatement(sql);
+                    pstmt.setInt(1, roomsId);
+                    pstmt.setInt(2, villaId);
+
+                    int rowsAffected = pstmt.executeUpdate();
+                    if (rowsAffected == 0) {
+                        res.setBody("{\"error\":\"Room atau Villa tidak ditemukan\"}");
+                        res.send(HttpURLConnection.HTTP_NOT_FOUND);
+                    } else {
+                        Map<String, Object> resMap = new HashMap<>();
+                        resMap.put("message", "Room berhasil dihapus");
+                        res.setBody(objectMapper.writeValueAsString(resMap));
+                        res.send(HttpURLConnection.HTTP_OK);
+                    }
+                    return true;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    res.setBody("{\"error\":\"Gagal menghapus Room\"}");
+                    res.send(HttpURLConnection.HTTP_INTERNAL_ERROR);
+                    return true;
+                }
+            }
+
             if ("POST".equalsIgnoreCase(method) && path.matches("^/villas/\\d+/rooms$")) {
                 try {
                     int villaId = Integer.parseInt(path.split("/")[2]);
