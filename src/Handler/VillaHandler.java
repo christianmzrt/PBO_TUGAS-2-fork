@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sun.net.httpserver.HttpExchange;
 import model.Booking;
+import model.Review;
 import model.Villa;
 import model.Roomtype;
 import Tugas2.DBConnection;
@@ -270,6 +271,15 @@ public class VillaHandler {
                     res.send(HttpURLConnection.HTTP_INTERNAL_ERROR);
                     return true;
                 }
+            }
+
+            if (method.equals("GET") && path.matches("^/villas/\\d+/reviews$")) {
+                int villaId = Integer.parseInt(path.split("/")[2]);
+                List<Review> villaReview = VillaService.getReviewsByVillaId(villaId);
+                ApiResponse<List<Review>> response = ApiResponse.success("Data Review berhasil diambil", villaReview);
+                res.setBody(objectMapper.writeValueAsString(response));
+                res.send(HttpURLConnection.HTTP_OK);
+                return true;
             }
 
         } catch (Exception e) {

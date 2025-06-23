@@ -2,9 +2,11 @@ package Service;
 
 import Tugas2.DBConnection;
 import model.Booking;
+import model.Review;
 import model.Villa;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -45,6 +47,33 @@ public class VillaService {
         return bookedRooms;
     }
 
+    public static List<Review> getReviewsByVillaId(int villaId) throws SQLException {
+        List<Review> reviews = new ArrayList<>();
+
+        String sql = """
+        SELECT r.*
+        FROM reviews r
+        JOIN bookings b ON r.booking = b.id
+        JOIN room_types rt ON b.room_type = rt.id
+        WHERE rt.villa = ?
+    """;
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+
+            stmt.setInt(1, villaId);
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                Review review = mapResultSetToReview(rs);
+                reviews.add(review);
+            }
+        }
+
+        return reviews;
+    }
+
+
     private static Villa mapResultSetToVilla(ResultSet rs) throws SQLException {
         return new Villa(
                 rs.getInt("id"),
@@ -74,4 +103,12 @@ public class VillaService {
         return booking;
     }
 
+    private static Review mapResultSetToReview(ResultSet rs) throws SQLException {
+        Review review = new Review();
+        review.setBooking(rs.getInt("booking"));
+        review.setStar(rs.getInt("star"));
+        review.setTitle(rs.getString("title"));
+        review.setContent(rs.getString("content"));
+        return review;
+    }
 }
