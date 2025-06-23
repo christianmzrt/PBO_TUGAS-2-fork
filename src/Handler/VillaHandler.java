@@ -158,7 +158,7 @@ public class VillaHandler {
                 }
             }
 
-            if ("POST".equalsIgnoreCase(method) && path.matches("^/villas/\\d+/roomtype$")) {
+            if ("POST".equalsIgnoreCase(method) && path.matches("^/villas/\\d+/rooms$")) {
                 try {
                     int villaId = Integer.parseInt(path.split("/")[2]);
 
