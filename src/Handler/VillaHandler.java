@@ -1,5 +1,6 @@
 package Handler;
 
+import HelperException.ValidationException;
 import Service.RoomTypeService;
 import Service.VillaService;
 import Response.ApiResponse;
@@ -53,22 +54,30 @@ public class VillaHandler {
             // POST /villas
             if (method.equals("POST") && path.equals("/villas")) {
                 if (reqJson != null) {
-                    String name = (String) reqJson.get("name");
-                    String description = (String) reqJson.get("description");
-                    String address = (String) reqJson.get("address");
+                    try {
+                        String name = (String) reqJson.get("name");
+                        String description = (String) reqJson.get("description");
+                        String address = (String) reqJson.get("address");
 
-                    try (Connection conn = DBConnection.getConnection()) {
-                        String sql = "INSERT INTO villas (name, description, address) VALUES (?, ?, ?)";
-                        var pstmt = conn.prepareStatement(sql);
-                        pstmt.setString(1, name);
-                        pstmt.setString(2, description);
-                        pstmt.setString(3, address);
-                        pstmt.executeUpdate();
+                        Villa villa = new Villa(name, description, address); // bisa lempar exception di sini
 
-                        Map<String, Object> resMap = new HashMap<>();
-                        resMap.put("message", "Villa berhasil ditambahkan");
-                        res.setBody(objectMapper.writeValueAsString(resMap));
-                        res.send(HttpURLConnection.HTTP_CREATED);
+                        try (Connection conn = DBConnection.getConnection()) {
+                            String sql = "INSERT INTO villas (name, description, address) VALUES (?, ?, ?)";
+                            var pstmt = conn.prepareStatement(sql);
+                            pstmt.setString(1, name);
+                            pstmt.setString(2, description);
+                            pstmt.setString(3, address);
+                            pstmt.executeUpdate();
+
+                            Map<String, Object> resMap = new HashMap<>();
+                            resMap.put("message", "Villa berhasil ditambahkan");
+                            res.setBody(objectMapper.writeValueAsString(resMap));
+                            res.send(HttpURLConnection.HTTP_CREATED);
+                            return true;
+                        }
+                    } catch (ValidationException e) {
+                        res.setBody("{\"error\":\"" + e.getMessage() + "\"}");
+                        res.send(HttpURLConnection.HTTP_BAD_REQUEST);
                         return true;
                     } catch (Exception e) {
                         e.printStackTrace();
