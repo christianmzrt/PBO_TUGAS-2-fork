@@ -142,73 +142,65 @@ public class VillaHandler {
 
             if (method.equals("PUT") && path.matches("/villas/\\d+/rooms/\\d+")) {
                 if (reqJson != null) {
-                    int roomTypeId = ((Number) reqJson.get("id")).intValue();
-                    int villaId = ((Number) reqJson.get("villa")).intValue();
-                    String name = (String) reqJson.get("name");
-                    int quantity = ((Number) reqJson.get("quantity")).intValue();
-                    int capacity = ((Number) reqJson.get("capacity")).intValue();
-                    int price = ((Number) reqJson.get("price")).intValue();
-                    String bedSize = (String) reqJson.get("bedSize");
-                    boolean hasDesk = Boolean.TRUE.equals(reqJson.get("hasDesk"));
-                    boolean hasAc = Boolean.TRUE.equals(reqJson.get("hasAc"));
-                    boolean hasTv = Boolean.TRUE.equals(reqJson.get("hasTv"));
-                    boolean hasWifi = Boolean.TRUE.equals(reqJson.get("hasWifi"));
-                    boolean hasShower = Boolean.TRUE.equals(reqJson.get("hasShower"));
-                    boolean hasHotwater = Boolean.TRUE.equals(reqJson.get("hasHotwater"));
-                    boolean hasFridge = Boolean.TRUE.equals(reqJson.get("hasFridge"));
+                    try {
+                        int roomTypeId = ((Number) reqJson.get("id")).intValue();
+                        int villaId = ((Number) reqJson.get("villa")).intValue();
+                        String name = (String) reqJson.get("name");
+                        int quantity = ((Number) reqJson.get("quantity")).intValue();
+                        int capacity = ((Number) reqJson.get("capacity")).intValue();
+                        int price = ((Number) reqJson.get("price")).intValue();
+                        String bedSize = (String) reqJson.get("bedSize");
+                        boolean hasDesk = Boolean.TRUE.equals(reqJson.get("hasDesk"));
+                        boolean hasAc = Boolean.TRUE.equals(reqJson.get("hasAc"));
+                        boolean hasTv = Boolean.TRUE.equals(reqJson.get("hasTv"));
+                        boolean hasWifi = Boolean.TRUE.equals(reqJson.get("hasWifi"));
+                        boolean hasShower = Boolean.TRUE.equals(reqJson.get("hasShower"));
+                        boolean hasHotwater = Boolean.TRUE.equals(reqJson.get("hasHotwater"));
+                        boolean hasFridge = Boolean.TRUE.equals(reqJson.get("hasFridge"));
+
+                        Roomtype roomtype = new Roomtype(roomTypeId, villaId, name, quantity, capacity, price, bedSize, hasDesk, hasAc, hasTv, hasWifi, hasShower, hasHotwater, hasFridge);
 
 
-                    if (name == null || bedSize == null ||
-                            name.isBlank() || bedSize.isBlank() ||
-                            quantity <= 0 || capacity <= 0 || price <= 0 ||
-                            reqJson.get("hasDesk") == null ||
-                            reqJson.get("hasAc") == null ||
-                            reqJson.get("hasTv") == null ||
-                            reqJson.get("hasWifi") == null ||
-                            reqJson.get("hasShower") == null ||
-                            reqJson.get("hasHotwater") == null ||
-                            reqJson.get("hasFridge") == null) {
+                        try (Connection conn = DBConnection.getConnection()) {
+                            String sql = """
+                                        UPDATE room_types
+                                        SET villa = ?, name = ?, quantity = ?, capacity = ?, price = ?,
+                                            bed_size = ?, has_desk = ?, has_ac = ?, has_tv = ?, has_wifi = ?,
+                                            has_shower = ?, has_hotwater = ?, has_fridge = ?
+                                        WHERE id = ?
+                                    """;
 
-                        res.setBody("{\"error\":\"Data room type tidak lengkap atau tidak valid.\"}");
-                        res.send(HttpURLConnection.HTTP_BAD_REQUEST);
-                        return true;
-                    }
+                            var pstmt = conn.prepareStatement(sql);
+                            pstmt.setInt(1, villaId);
+                            pstmt.setString(2, name);
+                            pstmt.setInt(3, quantity);
+                            pstmt.setInt(4, capacity);
+                            pstmt.setInt(5, price);
+                            pstmt.setString(6, bedSize);
+                            pstmt.setInt(7, hasDesk ? 1 : 0);
+                            pstmt.setInt(8, hasAc ? 1 : 0);
+                            pstmt.setInt(9, hasTv ? 1 : 0);
+                            pstmt.setInt(10, hasWifi ? 1 : 0);
+                            pstmt.setInt(11, hasShower ? 1 : 0);
+                            pstmt.setInt(12, hasHotwater ? 1 : 0);
+                            pstmt.setInt(13, hasFridge ? 1 : 0);
+                            pstmt.setInt(14, roomTypeId);
 
-                    try (Connection conn = DBConnection.getConnection()) {
-                        String sql = """
-                            UPDATE room_types
-                            SET villa = ?, name = ?, quantity = ?, capacity = ?, price = ?,
-                                bed_size = ?, has_desk = ?, has_ac = ?, has_tv = ?, has_wifi = ?,
-                                has_shower = ?, has_hotwater = ?, has_fridge = ?
-                            WHERE id = ?
-                        """;
-
-                        var pstmt = conn.prepareStatement(sql);
-                        pstmt.setInt(1, villaId);
-                        pstmt.setString(2, name);
-                        pstmt.setInt(3, quantity);
-                        pstmt.setInt(4, capacity);
-                        pstmt.setInt(5, price);
-                        pstmt.setString(6, bedSize);
-                        pstmt.setInt(7, hasDesk ? 1 : 0);
-                        pstmt.setInt(8, hasAc ? 1 : 0);
-                        pstmt.setInt(9, hasTv ? 1 : 0);
-                        pstmt.setInt(10, hasWifi ? 1 : 0);
-                        pstmt.setInt(11, hasShower ? 1 : 0);
-                        pstmt.setInt(12, hasHotwater ? 1 : 0);
-                        pstmt.setInt(13, hasFridge ? 1 : 0);
-                        pstmt.setInt(14, roomTypeId);
-
-                        int rowsAffected = pstmt.executeUpdate();
-                        if (rowsAffected == 0) {
-                            res.setBody("{\"error\":\"Villa tidak ditemukan\"}");
-                            res.send(HttpURLConnection.HTTP_NOT_FOUND);
-                        } else {
-                            Map<String, Object> resMap = new HashMap<>();
-                            resMap.put("message", "Villa berhasil diperbarui");
-                            res.setBody(objectMapper.writeValueAsString(resMap));
-                            res.send(HttpURLConnection.HTTP_OK);
+                            int rowsAffected = pstmt.executeUpdate();
+                            if (rowsAffected == 0) {
+                                res.setBody("{\"error\":\"Villa tidak ditemukan\"}");
+                                res.send(HttpURLConnection.HTTP_NOT_FOUND);
+                            } else {
+                                Map<String, Object> resMap = new HashMap<>();
+                                resMap.put("message", "Villa berhasil diperbarui");
+                                res.setBody(objectMapper.writeValueAsString(resMap));
+                                res.send(HttpURLConnection.HTTP_OK);
+                            }
+                            return true;
                         }
+                    } catch (ValidationException e) {
+                        res.setBody("{\"error\":\"" + e.getMessage() + "\"}");
+                        res.send(HttpURLConnection.HTTP_BAD_REQUEST);
                         return true;
                     } catch (Exception e) {
                         e.printStackTrace();
