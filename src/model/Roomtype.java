@@ -10,19 +10,19 @@ public class Roomtype {
     private int capacity;
     private int price;
     private String bedSize;
-    private boolean hasDesk;
-    private boolean hasAc;
-    private boolean hasTv;
-    private boolean hasWifi;
-    private boolean hasShower;
-    private boolean hasHotwater;
-    private boolean hasFridge;
+    private Boolean hasDesk;
+    private Boolean hasAc;
+    private Boolean hasTv;
+    private Boolean hasWifi;
+    private Boolean hasShower;
+    private Boolean hasHotwater;
+    private Boolean hasFridge;
 
     public Roomtype() {}
 
     public Roomtype(int id, int villa, String name, int quantity, int capacity, int price, String bedSize,
-                    boolean hasDesk, boolean hasAc, boolean hasTv, boolean hasWifi,
-                    boolean hasShower, boolean hasHotwater, boolean hasFridge) {
+                    Boolean hasDesk, Boolean hasAc, Boolean hasTv, Boolean hasWifi,
+                    Boolean hasShower, Boolean hasHotwater, Boolean hasFridge) {
         this.id = id;
         this.villa = villa;
         this.name = name;
@@ -59,32 +59,32 @@ public class Roomtype {
         if(bedSize == null || bedSize.isEmpty() || bedSize.isBlank()){
             throw new ValidationException("Bed Size Room tidak boleh Kosong atau Null");
         }
-        if(hasDesk != true || hasDesk != false){
+        if(hasDesk == null){
             throw new ValidationException("Has Desk tidak boleh Kosong atau Null");
         }
-        if(hasAc != true || hasAc != false){
+        if(hasAc == null){
             throw new ValidationException("Has AC tidak boleh Kosong atau Null");
         }
-        if(hasTv != true || hasTv != false){
+        if(hasTv == null){
             throw new ValidationException("Has TV tidak boleh Kosong atau Null");
         }
-        if(hasWifi != true || hasWifi != false){
+        if(hasWifi == null){
             throw new ValidationException("Has Wifi tidak boleh Kosong atau Null");
         }
-        if(hasShower != true || hasShower != false){
+        if(hasShower == null){
             throw new ValidationException("Has Shower tidak boleh Kosong atau Null");
         }
-        if(hasHotwater != true || hasHotwater != false){
+        if(hasHotwater == null){
             throw new ValidationException("Has Hot Water tidak boleh Kosong atau Null");
         }
-        if(hasFridge != true || hasFridge != false){
+        if(hasFridge == null){
             throw new ValidationException("Has Fridge tidak boleh Kosong atau Null");
         }
     }
 
     public Roomtype(int villa, String name, int quantity, int capacity, int price, String bedSize,
-                    boolean hasDesk, boolean hasAc, boolean hasTv, boolean hasWifi,
-                    boolean hasShower, boolean hasHotwater, boolean hasFridge) {
+                    Boolean hasDesk, Boolean hasAc, Boolean hasTv, Boolean hasWifi,
+                    Boolean hasShower, Boolean hasHotwater, Boolean hasFridge) {
         this.villa = villa;
         this.name = name;
         this.quantity = quantity;
@@ -117,25 +117,25 @@ public class Roomtype {
         if(bedSize == null || bedSize.isEmpty() || bedSize.isBlank()){
             throw new ValidationException("Bed Size Room tidak boleh Kosong atau Null");
         }
-        if(hasDesk != true || hasDesk != false){
+        if(hasDesk == null){
             throw new ValidationException("Has Desk tidak boleh Kosong atau Null");
         }
-        if(hasAc != true || hasAc != false){
+        if(hasAc == null){
             throw new ValidationException("Has AC tidak boleh Kosong atau Null");
         }
-        if(hasTv != true || hasTv != false){
+        if(hasTv == null){
             throw new ValidationException("Has TV tidak boleh Kosong atau Null");
         }
-        if(hasWifi != true || hasWifi != false){
+        if(hasWifi == null){
             throw new ValidationException("Has Wifi tidak boleh Kosong atau Null");
         }
-        if(hasShower != true || hasShower != false){
+        if(hasShower == null){
             throw new ValidationException("Has Shower tidak boleh Kosong atau Null");
         }
-        if(hasHotwater != true || hasHotwater != false){
+        if(hasHotwater == null){
             throw new ValidationException("Has Hot Water tidak boleh Kosong atau Null");
         }
-        if(hasFridge != true || hasFridge != false){
+        if(hasFridge == null){
             throw new ValidationException("Has Fridge tidak boleh Kosong atau Null");
         }
     }
