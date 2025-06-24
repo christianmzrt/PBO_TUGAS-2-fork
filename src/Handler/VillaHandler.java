@@ -276,21 +276,21 @@ public class VillaHandler {
                 try {
                     int villaId = Integer.parseInt(path.split("/")[2]);
 
-                    Roomtype roomtype = new Roomtype();
-                    roomtype.setVilla(villaId);
-
-                    roomtype.setName((String) reqJson.get("name"));
-                    roomtype.setQuantity(((Number) reqJson.get("quantity")).intValue());
-                    roomtype.setCapacity(((Number) reqJson.get("capacity")).intValue());
-                    roomtype.setPrice(((Number) reqJson.get("price")).intValue());
-                    roomtype.setBedSize((String) reqJson.get("bedSize"));
-                    roomtype.setHasDesk(Boolean.TRUE.equals(reqJson.get("hasDesk")));
-                    roomtype.setHasAc(Boolean.TRUE.equals(reqJson.get("hasAc")));
-                    roomtype.setHasTv(Boolean.TRUE.equals(reqJson.get("hasTv")));
-                    roomtype.setHasWifi(Boolean.TRUE.equals(reqJson.get("hasWifi")));
-                    roomtype.setHasShower(Boolean.TRUE.equals(reqJson.get("hasShower")));
-                    roomtype.setHasHotwater(Boolean.TRUE.equals(reqJson.get("hasHotwater")));
-                    roomtype.setHasFridge(Boolean.TRUE.equals(reqJson.get("hasFridge")));
+                    Roomtype roomtype = new Roomtype(
+                            villaId,
+                            (String) reqJson.get("name"),
+                            ((Number) reqJson.get("quantity")).intValue(),
+                            ((Number) reqJson.get("capacity")).intValue(),
+                            ((Number) reqJson.get("price")).intValue(),
+                            (String) reqJson.get("bedSize"),
+                            Boolean.TRUE.equals(reqJson.get("hasDesk")),
+                            Boolean.TRUE.equals(reqJson.get("hasAc")),
+                            Boolean.TRUE.equals(reqJson.get("hasTv")),
+                            Boolean.TRUE.equals(reqJson.get("hasWifi")),
+                            Boolean.TRUE.equals(reqJson.get("hasShower")),
+                            Boolean.TRUE.equals(reqJson.get("hasHotwater")),
+                            Boolean.TRUE.equals(reqJson.get("hasFridge"))
+                    );
 
 
                     try (Connection conn = DBConnection.getConnection()) {
@@ -323,6 +323,10 @@ public class VillaHandler {
                         return true;
                     }
 
+                } catch (ValidationException e) {
+                    res.setBody("{\"error\":\"" + e.getMessage() + "\"}");
+                    res.send(HttpURLConnection.HTTP_BAD_REQUEST);
+                    return true;
                 } catch (Exception e) {
                     e.printStackTrace();
                     res.setBody("{\"error\":\"Gagal memproses roomtype\"}");
