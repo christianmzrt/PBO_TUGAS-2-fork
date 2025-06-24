@@ -31,11 +31,50 @@ public class VillaHandler {
         try {
             // GET /villas
             if (method.equals("GET") && path.equals("/villas")) {
-                List<Villa> villas = VillaService.getAllVillas();
-                ApiResponse<List<Villa>> response = ApiResponse.success("Data villa berhasil diambil", villas);
-                res.setBody(objectMapper.writeValueAsString(response));
-                res.send(HttpURLConnection.HTTP_OK);
-                return true;
+                String query = httpExchange.getRequestURI().getQuery();
+
+                if (query != null && query.contains("ci_date") && query.contains("co_date")) {
+                    try {
+                        Map<String, String> queryParams = VillaService.parseQueryParams(query);
+
+                        String ci = queryParams.get("ci_date");
+                        String co = queryParams.get("co_date");
+
+                        if (ci == null || co == null) {
+                            res.setBody("{\"error\":\"Tanggal checkin dan checkout harus diisi\"}");
+                            res.send(HttpURLConnection.HTTP_BAD_REQUEST);
+                            return true;
+                        }
+
+                        LocalDate checkin = LocalDate.parse(ci);
+                        LocalDate checkout = LocalDate.parse(co);
+
+                        Map<LocalDate, List<Map<String, Object>>> availability =
+                                VillaService.getRoomAvailability(checkin, checkout);
+
+                        res.setBody(objectMapper.writeValueAsString(availability));
+                        res.send(HttpURLConnection.HTTP_OK);
+                        return true;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        res.setBody("{\"error\":\"Tanggal tidak valid atau terjadi kesalahan\"}");
+                        res.send(HttpURLConnection.HTTP_BAD_REQUEST);
+                        return true;
+                    }
+                } else {
+                    try {
+                        List<Villa> villas = VillaService.getAllVillas();
+                        ApiResponse<List<Villa>> response = ApiResponse.success("Data villa berhasil diambil", villas);
+                        res.setBody(objectMapper.writeValueAsString(response));
+                        res.send(HttpURLConnection.HTTP_OK);
+                        return true;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        res.setBody("{\"error\":\"Gagal mengambil data villa\"}");
+                        res.send(HttpURLConnection.HTTP_INTERNAL_ERROR);
+                        return true;
+                    }
+                }
             }
 
             if (method.equals("GET") && path.matches("/villas/\\d+")) {

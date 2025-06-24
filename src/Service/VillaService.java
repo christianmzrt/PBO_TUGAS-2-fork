@@ -129,4 +129,67 @@ public class VillaService {
         return review;
     }
 
+    public static Map<LocalDate, List<Map<String, Object>>> getRoomAvailability(LocalDate checkin, LocalDate checkout) throws SQLException {
+        Map<LocalDate, List<Map<String, Object>>> availabilityPerDate = new LinkedHashMap<>();
+
+        List<LocalDate> dates = generateDateRange(checkin, checkout.minusDays(1));
+
+        try (Connection conn = DBConnection.getConnection()) {
+            for (LocalDate date : dates) {
+                String sql = """
+                        SELECT rt.id AS room_type_id, v.name AS villa_name, rt.quantity,
+                               COUNT(b.id) AS booked_count,
+                               (rt.quantity - COUNT(b.id)) AS available
+                        FROM room_types rt
+                        JOIN villas v ON rt.villa = v.id
+                        LEFT JOIN bookings b ON b.room_type = rt.id
+                          AND b.checkin_date <= ? AND b.checkout_date > ?
+                        GROUP BY rt.id
+                        HAVING available > 0
+                        """;
+
+                try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                    stmt.setString(1, date.toString());
+                    stmt.setString(2, date.toString());
+                    ResultSet rs = stmt.executeQuery();
+
+                    List<Map<String, Object>> roomList = new ArrayList<>();
+                    while (rs.next()) {
+                        Map<String, Object> room = new HashMap<>();
+                        room.put("room_type_id", rs.getInt("room_type_id"));
+                        room.put("villa", rs.getString("villa_name"));
+                        room.put("available", rs.getInt("available"));
+                        roomList.add(room);
+                    }
+
+                    availabilityPerDate.put(date, roomList);
+                }
+            }
+        }
+
+        return availabilityPerDate;
+    }
+
+    private static List<LocalDate> generateDateRange(LocalDate start, LocalDate end) {
+        List<LocalDate> dates = new ArrayList<>();
+        LocalDate current = start;
+        while (!current.isAfter(end)) {
+            dates.add(current);
+            current = current.plusDays(1);
+        }
+        return dates;
+    }
+
+    public static Map<String, String> parseQueryParams(String query) {
+        Map<String, String> params = new HashMap<>();
+        if (query != null) {
+            for (String pair : query.split("&")) {
+                String[] kv = pair.split("=");
+                if (kv.length == 2) {
+                    params.put(kv[0], kv[1]);
+                }
+            }
+        }
+        return params;
+    }
 }
