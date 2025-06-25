@@ -99,26 +99,20 @@ public class VillaHandler {
                         String description = (String) reqJson.get("description");
                         String address = (String) reqJson.get("address");
 
-                        Villa villa = new Villa(name, description, address); // bisa lempar exception di sini
+                        Villa villa = new Villa(name, description, address);
+                        VillaService.addVilla(villa);
 
-                        try (Connection conn = DBConnection.getConnection()) {
-                            String sql = "INSERT INTO villas (name, description, address) VALUES (?, ?, ?)";
-                            var pstmt = conn.prepareStatement(sql);
-                            pstmt.setString(1, name);
-                            pstmt.setString(2, description);
-                            pstmt.setString(3, address);
-                            pstmt.executeUpdate();
+                        Map<String, Object> resMap = new HashMap<>();
+                        resMap.put("message", "Villa berhasil ditambahkan");
+                        res.setBody(objectMapper.writeValueAsString(resMap));
+                        res.send(HttpURLConnection.HTTP_CREATED);
+                        return true;
 
-                            Map<String, Object> resMap = new HashMap<>();
-                            resMap.put("message", "Villa berhasil ditambahkan");
-                            res.setBody(objectMapper.writeValueAsString(resMap));
-                            res.send(HttpURLConnection.HTTP_CREATED);
-                            return true;
-                        }
                     } catch (ValidationException e) {
                         res.setBody("{\"error\":\"" + e.getMessage() + "\"}");
                         res.send(HttpURLConnection.HTTP_BAD_REQUEST);
                         return true;
+
                     } catch (Exception e) {
                         e.printStackTrace();
                         res.setBody("{\"error\":\"Gagal menyimpan ke database\"}");

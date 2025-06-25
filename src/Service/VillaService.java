@@ -90,6 +90,17 @@ public class VillaService {
         return reviews;
     }
 
+    public static void addVilla(Villa villa) throws SQLException {
+        try (Connection conn = DBConnection.getConnection()) {
+            String sql = "INSERT INTO villas (name, description, address) VALUES (?, ?, ?)";
+            var pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, villa.getName());
+            pstmt.setString(2, villa.getDescription());
+            pstmt.setString(3, villa.getAddress());
+            pstmt.executeUpdate();
+        }
+    }
+
 
     private static Villa mapResultSetToVilla(ResultSet rs) throws SQLException {
         return new Villa(
