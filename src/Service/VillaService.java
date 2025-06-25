@@ -101,6 +101,19 @@ public class VillaService {
         }
     }
 
+    public static boolean updateVilla(int id, Villa villa) throws SQLException {
+        try (Connection conn = DBConnection.getConnection()) {
+            String sql = "UPDATE villas SET name = ?, description = ?, address = ? WHERE id = ?";
+            var pstmt = conn.prepareStatement(sql);
+            pstmt.setString(1, villa.getName());
+            pstmt.setString(2, villa.getDescription());
+            pstmt.setString(3, villa.getAddress());
+            pstmt.setInt(4, id);
+
+            int rowsAffected = pstmt.executeUpdate();
+            return rowsAffected > 0;
+        }
+    }
 
     private static Villa mapResultSetToVilla(ResultSet rs) throws SQLException {
         return new Villa(

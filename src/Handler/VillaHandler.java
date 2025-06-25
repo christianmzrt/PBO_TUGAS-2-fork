@@ -137,26 +137,19 @@ public class VillaHandler {
 
                         Villa villa = new Villa(name, description, address);
 
-                        try (Connection conn = DBConnection.getConnection()) {
-                            String sql = "UPDATE villas SET name = ?, description = ?, address = ? WHERE id = ?";
-                            var pstmt = conn.prepareStatement(sql);
-                            pstmt.setString(1, name);
-                            pstmt.setString(2, description);
-                            pstmt.setString(3, address);
-                            pstmt.setInt(4, villaId);
+                        boolean updated = VillaService.updateVilla(villaId, villa);
 
-                            int rowsAffected = pstmt.executeUpdate();
-                            if (rowsAffected == 0) {
-                                res.setBody("{\"error\":\"Villa tidak ditemukan\"}");
-                                res.send(HttpURLConnection.HTTP_NOT_FOUND);
-                            } else {
-                                Map<String, Object> resMap = new HashMap<>();
-                                resMap.put("message", "Villa berhasil diperbarui");
-                                res.setBody(objectMapper.writeValueAsString(resMap));
-                                res.send(HttpURLConnection.HTTP_OK);
-                            }
-                            return true;
+                        if (!updated) {
+                            res.setBody("{\"error\":\"Villa tidak ditemukan\"}");
+                            res.send(HttpURLConnection.HTTP_NOT_FOUND);
+                        } else {
+                            Map<String, Object> resMap = new HashMap<>();
+                            resMap.put("message", "Villa berhasil diperbarui");
+                            res.setBody(objectMapper.writeValueAsString(resMap));
+                            res.send(HttpURLConnection.HTTP_OK);
                         }
+                        return true;
+
                     } catch (ValidationException e) {
                         res.setBody("{\"error\":\"" + e.getMessage() + "\"}");
                         res.send(HttpURLConnection.HTTP_BAD_REQUEST);
