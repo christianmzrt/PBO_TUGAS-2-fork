@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Server {
+    private static final String VALID_API_KEY = "rahasia123";
     private HttpServer server;
 
     public Server(int port) throws Exception {
@@ -41,6 +42,18 @@ public class Server {
         String method = httpExchange.getRequestMethod();
         String path = uri.getPath();
         System.out.printf("path: %s | method: %s\n", path, method);
+
+        String apiKey = httpExchange.getRequestHeaders().getFirst("X-API-KEY");
+        if (apiKey == null || !apiKey.equals(VALID_API_KEY)) {
+            try {
+                res.setBody("{\"error\": \"API key tidak valid atau tidak diberikan\"}");
+                res.send(HttpURLConnection.HTTP_UNAUTHORIZED);
+                httpExchange.close();
+                return;
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        }
 
         try {
             Map<String, Object> requestBody = null;
