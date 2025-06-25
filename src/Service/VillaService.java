@@ -3,6 +3,7 @@ package Service;
 import Tugas2.DBConnection;
 import model.Booking;
 import model.Review;
+import model.Roomtype;
 import model.Villa;
 
 import java.sql.Connection;
@@ -114,6 +115,37 @@ public class VillaService {
             return rowsAffected > 0;
         }
     }
+
+    public static boolean updateRoomType(Roomtype roomtype) throws SQLException {
+        try (Connection conn = DBConnection.getConnection()) {
+            String sql = """
+            UPDATE room_types
+            SET villa = ?, name = ?, quantity = ?, capacity = ?, price = ?,
+                bed_size = ?, has_desk = ?, has_ac = ?, has_tv = ?, has_wifi = ?,
+                has_shower = ?, has_hotwater = ?, has_fridge = ?
+            WHERE id = ?
+        """;
+
+            var pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, roomtype.getVilla());
+            pstmt.setString(2, roomtype.getName());
+            pstmt.setInt(3, roomtype.getQuantity());
+            pstmt.setInt(4, roomtype.getCapacity());
+            pstmt.setInt(5, roomtype.getPrice());
+            pstmt.setString(6, roomtype.getBedSize());
+            pstmt.setInt(7, roomtype.isHasDesk() ? 1 : 0);
+            pstmt.setInt(8, roomtype.isHasAc() ? 1 : 0);
+            pstmt.setInt(9, roomtype.isHasTv() ? 1 : 0);
+            pstmt.setInt(10, roomtype.isHasWifi() ? 1 : 0);
+            pstmt.setInt(11, roomtype.isHasShower() ? 1 : 0);
+            pstmt.setInt(12, roomtype.isHasHotwater() ? 1 : 0);
+            pstmt.setInt(13, roomtype.isHasFridge() ? 1 : 0);
+            pstmt.setInt(14, roomtype.getId());
+
+            return pstmt.executeUpdate() > 0;
+        }
+    }
+
 
     private static Villa mapResultSetToVilla(ResultSet rs) throws SQLException {
         return new Villa(
