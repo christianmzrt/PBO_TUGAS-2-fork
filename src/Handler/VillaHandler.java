@@ -107,25 +107,26 @@ public class VillaHandler {
                         Villa villa = new Villa(name, description, address);
                         VillaService.addVilla(villa);
 
-                        Map<String, Object> resMap = new HashMap<>();
-                        resMap.put("message", "Villa berhasil ditambahkan");
-                        res.setBody(objectMapper.writeValueAsString(resMap));
+                        ApiResponse<Object> response = ApiResponse.success("Villa berhasil ditambahkan");
+                        res.setBody(objectMapper.writeValueAsString(response));
                         res.send(HttpURLConnection.HTTP_CREATED);
                         return true;
 
                     } catch (ValidationException e) {
-                        res.setBody("{\"error\":\"" + e.getMessage() + "\"}");
+                        ApiResponse<Object> response = ApiResponse.error(e.getMessage());
+                        res.setBody(objectMapper.writeValueAsString(response));
                         res.send(HttpURLConnection.HTTP_BAD_REQUEST);
                         return true;
-
                     } catch (Exception e) {
                         e.printStackTrace();
-                        res.setBody("{\"error\":\"Gagal menyimpan ke database\"}");
+                        ApiResponse<Object> response = ApiResponse.error("Gagal menyimpan ke database");
+                        res.setBody(objectMapper.writeValueAsString(response));
                         res.send(HttpURLConnection.HTTP_INTERNAL_ERROR);
                         return true;
                     }
                 } else {
-                    res.setBody("{\"error\":\"Data tidak valid\"}");
+                    ApiResponse<Object> response = ApiResponse.error("Data tidak valid");
+                    res.setBody(objectMapper.writeValueAsString(response));
                     res.send(HttpURLConnection.HTTP_BAD_REQUEST);
                     return true;
                 }
