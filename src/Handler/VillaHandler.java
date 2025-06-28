@@ -142,32 +142,34 @@ public class VillaHandler {
                         String address = (String) reqJson.get("address");
 
                         Villa villa = new Villa(name, description, address);
-
                         boolean updated = VillaService.updateVilla(villaId, villa);
 
                         if (!updated) {
-                            res.setBody("{\"error\":\"Villa tidak ditemukan\"}");
+                            ApiResponse<Object> response = ApiResponse.error("Villa tidak ditemukan");
+                            res.setBody(objectMapper.writeValueAsString(response));
                             res.send(HttpURLConnection.HTTP_NOT_FOUND);
                         } else {
-                            Map<String, Object> resMap = new HashMap<>();
-                            resMap.put("message", "Villa berhasil diperbarui");
-                            res.setBody(objectMapper.writeValueAsString(resMap));
+                            ApiResponse<Object> response = ApiResponse.success("Villa berhasil diperbarui");
+                            res.setBody(objectMapper.writeValueAsString(response));
                             res.send(HttpURLConnection.HTTP_OK);
                         }
                         return true;
 
                     } catch (ValidationException e) {
-                        res.setBody("{\"error\":\"" + e.getMessage() + "\"}");
+                        ApiResponse<Object> response = ApiResponse.error(e.getMessage());
+                        res.setBody(objectMapper.writeValueAsString(response));
                         res.send(HttpURLConnection.HTTP_BAD_REQUEST);
                         return true;
                     } catch (Exception e) {
                         e.printStackTrace();
-                        res.setBody("{\"error\":\"Gagal memperbarui villa\"}");
+                        ApiResponse<Object> response = ApiResponse.error("Gagal memperbarui villa");
+                        res.setBody(objectMapper.writeValueAsString(response));
                         res.send(HttpURLConnection.HTTP_INTERNAL_ERROR);
                         return true;
                     }
                 } else {
-                    res.setBody("{\"error\":\"Data tidak valid\"}");
+                    ApiResponse<Object> response = ApiResponse.error("Data tidak valid");
+                    res.setBody(objectMapper.writeValueAsString(response));
                     res.send(HttpURLConnection.HTTP_BAD_REQUEST);
                     return true;
                 }
