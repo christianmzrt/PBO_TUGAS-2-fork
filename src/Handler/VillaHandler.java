@@ -331,20 +331,20 @@ public class VillaHandler {
                         pstmt.setBoolean(13, roomtype.isHasFridge());
                         pstmt.executeUpdate();
 
-                        Map<String, Object> response = new HashMap<>();
-                        response.put("message", "Roomtype berhasil ditambahkan");
+                        ApiResponse<Object> response = ApiResponse.success("Roomtype berhasil ditambahkan");
                         res.setBody(objectMapper.writeValueAsString(response));
                         res.send(HttpURLConnection.HTTP_CREATED);
                         return true;
                     }
-
                 } catch (ValidationException e) {
-                    res.setBody("{\"error\":\"" + e.getMessage() + "\"}");
+                    ApiResponse<Object> response = ApiResponse.error(e.getMessage());
+                    res.setBody(objectMapper.writeValueAsString(response));
                     res.send(HttpURLConnection.HTTP_BAD_REQUEST);
                     return true;
                 } catch (Exception e) {
                     e.printStackTrace();
-                    res.setBody("{\"error\":\"Gagal memproses roomtype\"}");
+                    ApiResponse<Object> response = ApiResponse.error("Gagal memproses roomtype");
+                    res.setBody(objectMapper.writeValueAsString(response));
                     res.send(HttpURLConnection.HTTP_INTERNAL_ERROR);
                     return true;
                 }
