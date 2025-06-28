@@ -41,7 +41,8 @@ public class VillaHandler {
                         String co = queryParams.get("co_date");
 
                         if (ci == null || co == null) {
-                            res.setBody("{\"error\":\"Tanggal checkin dan checkout harus diisi\"}");
+                            ApiResponse<Object> errorResponse = ApiResponse.error("Tanggal checkin dan checkout harus diisi");
+                            res.setBody(objectMapper.writeValueAsString(errorResponse));
                             res.send(HttpURLConnection.HTTP_BAD_REQUEST);
                             return true;
                         }
@@ -49,15 +50,15 @@ public class VillaHandler {
                         LocalDate checkin = LocalDate.parse(ci);
                         LocalDate checkout = LocalDate.parse(co);
 
-                        Map<LocalDate, List<Map<String, Object>>> availability =
-                                VillaService.getRoomAvailability(checkin, checkout);
-
-                        res.setBody(objectMapper.writeValueAsString(availability));
+                        Map<LocalDate, List<Map<String, Object>>> availability = VillaService.getRoomAvailability(checkin, checkout);
+                        ApiResponse<Map<LocalDate, List<Map<String, Object>>>> response = ApiResponse.success("Ketersediaan kamar berhasil diambil", availability);
+                        res.setBody(objectMapper.writeValueAsString(response));
                         res.send(HttpURLConnection.HTTP_OK);
                         return true;
                     } catch (Exception e) {
                         e.printStackTrace();
-                        res.setBody("{\"error\":\"Tanggal tidak valid atau terjadi kesalahan\"}");
+                        ApiResponse<Object> errorResponse = ApiResponse.error("Tanggal tidak valid atau terjadi kesalahan");
+                        res.setBody(objectMapper.writeValueAsString(errorResponse));
                         res.send(HttpURLConnection.HTTP_BAD_REQUEST);
                         return true;
                     }
@@ -70,7 +71,8 @@ public class VillaHandler {
                         return true;
                     } catch (Exception e) {
                         e.printStackTrace();
-                        res.setBody("{\"error\":\"Gagal mengambil data villa\"}");
+                        ApiResponse<Object> errorResponse = ApiResponse.error("Gagal mengambil data villa");
+                        res.setBody(objectMapper.writeValueAsString(errorResponse));
                         res.send(HttpURLConnection.HTTP_INTERNAL_ERROR);
                         return true;
                     }
