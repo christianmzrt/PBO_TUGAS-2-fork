@@ -238,18 +238,20 @@ public class VillaHandler {
 
                     int rowsAffected = pstmt.executeUpdate();
                     if (rowsAffected == 0) {
-                        res.setBody("{\"error\":\"Villa tidak ditemukan\"}");
+                        ApiResponse<Object> response = ApiResponse.error("Villa tidak ditemukan");
+                        res.setBody(objectMapper.writeValueAsString(response));
                         res.send(HttpURLConnection.HTTP_NOT_FOUND);
                     } else {
-                        Map<String, Object> resMap = new HashMap<>();
-                        resMap.put("message", "Villa berhasil dihapus");
-                        res.setBody(objectMapper.writeValueAsString(resMap));
+                        ApiResponse<Object> response = ApiResponse.success("Villa berhasil dihapus");
+                        res.setBody(objectMapper.writeValueAsString(response));
                         res.send(HttpURLConnection.HTTP_OK);
                     }
                     return true;
+
                 } catch (Exception e) {
                     e.printStackTrace();
-                    res.setBody("{\"error\":\"Gagal menghapus villa\"}");
+                    ApiResponse<Object> response = ApiResponse.error("Gagal menghapus villa");
+                    res.setBody(objectMapper.writeValueAsString(response));
                     res.send(HttpURLConnection.HTTP_INTERNAL_ERROR);
                     return true;
                 }
