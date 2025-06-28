@@ -398,6 +398,7 @@ public class VillaHandler {
 
             if (method.equals("PUT") && path.matches("/checkedout/\\d+")){
                 int checkedinId = Integer.parseInt(path.split("/")[2]);
+
                 try (Connection conn = DBConnection.getConnection()) {
                     String sql = "UPDATE bookings SET has_checkedout = 1 WHERE id = ?";
                     var pstmt = conn.prepareStatement(sql);
@@ -405,18 +406,19 @@ public class VillaHandler {
 
                     int rowsAffected = pstmt.executeUpdate();
                     if (rowsAffected == 0) {
-                        res.setBody("{\"error\":\"Checkedout ID tidak ditemukan\"}");
+                        ApiResponse<Object> response = ApiResponse.error("Checkedout ID tidak ditemukan");
+                        res.setBody(objectMapper.writeValueAsString(response));
                         res.send(HttpURLConnection.HTTP_NOT_FOUND);
                     } else {
-                        Map<String, Object> resMap = new HashMap<>();
-                        resMap.put("message", "Berhasil Checkedout");
-                        res.setBody(objectMapper.writeValueAsString(resMap));
+                        ApiResponse<Object> response = ApiResponse.success("Berhasil Checkedout", null);
+                        res.setBody(objectMapper.writeValueAsString(response));
                         res.send(HttpURLConnection.HTTP_OK);
                     }
                     return true;
                 } catch (Exception e) {
                     e.printStackTrace();
-                    res.setBody("{\"error\":\"Gagal Checkedout\"}");
+                    ApiResponse<Object> response = ApiResponse.error("Gagal Checkedout");
+                    res.setBody(objectMapper.writeValueAsString(response));
                     res.send(HttpURLConnection.HTTP_INTERNAL_ERROR);
                     return true;
                 }
