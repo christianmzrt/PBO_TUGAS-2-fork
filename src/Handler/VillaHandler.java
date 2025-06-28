@@ -269,18 +269,19 @@ public class VillaHandler {
 
                     int rowsAffected = pstmt.executeUpdate();
                     if (rowsAffected == 0) {
-                        res.setBody("{\"error\":\"Room atau Villa tidak ditemukan\"}");
+                        ApiResponse<Object> response = ApiResponse.error("Room atau Villa tidak ditemukan");
+                        res.setBody(objectMapper.writeValueAsString(response));
                         res.send(HttpURLConnection.HTTP_NOT_FOUND);
                     } else {
-                        Map<String, Object> resMap = new HashMap<>();
-                        resMap.put("message", "Room berhasil dihapus");
-                        res.setBody(objectMapper.writeValueAsString(resMap));
+                        ApiResponse<Object> response = ApiResponse.success("Room berhasil dihapus");
+                        res.setBody(objectMapper.writeValueAsString(response));
                         res.send(HttpURLConnection.HTTP_OK);
                     }
                     return true;
                 } catch (Exception e) {
                     e.printStackTrace();
-                    res.setBody("{\"error\":\"Gagal menghapus Room\"}");
+                    ApiResponse<Object> response = ApiResponse.error("Gagal menghapus Room");
+                    res.setBody(objectMapper.writeValueAsString(response));
                     res.send(HttpURLConnection.HTTP_INTERNAL_ERROR);
                     return true;
                 }
