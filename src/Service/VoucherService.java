@@ -168,7 +168,14 @@ public class VoucherService {
         voucher.setDiscount(rs.getDouble("discount"));
 
         String startDateStr = rs.getString("start_date");
+        if (startDateStr != null) {
+            voucher.setStartDate(LocalDateTime.parse(startDateStr, DB_FORMATTER));
+        }
+
         String endDateStr = rs.getString("end_date");
+        if (endDateStr != null) {
+            voucher.setEndDate(LocalDateTime.parse(endDateStr, DB_FORMATTER));
+        }
 
         voucher.setStartDate(LocalDateTime.parse(startDateStr, DB_FORMATTER));
         voucher.setEndDate(LocalDateTime.parse(endDateStr, DB_FORMATTER));
