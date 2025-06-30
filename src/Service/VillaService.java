@@ -242,10 +242,17 @@ public class VillaService {
             for (String pair : query.split("&")) {
                 String[] kv = pair.split("=");
                 if (kv.length == 2) {
-                    params.put(kv[0], kv[1]);
+                    try {
+                        String key = java.net.URLDecoder.decode(kv[0], "UTF-8");
+                        String value = java.net.URLDecoder.decode(kv[1], "UTF-8");
+                        params.put(key, value);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
         return params;
     }
+
 }
