@@ -263,20 +263,28 @@ public class CustomerService {
     private static Booking mapResultSetToBooking(ResultSet rs) throws SQLException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-        return new Booking(
-                rs.getInt("id"),
-                rs.getInt("customer"),
-                rs.getInt("room_type"),
-                LocalDateTime.parse(rs.getString("checkin_date"), formatter),
-                LocalDateTime.parse(rs.getString("checkout_date"), formatter),
-                rs.getInt("price"),
-                rs.getObject("voucher", Integer.class),
-                rs.getInt("final_price"),
-                rs.getString("payment_status"),
-                rs.getInt("has_checkedin") == 1,
-                rs.getInt("has_checkedout") == 1
-        );
+        try {
+            Object voucherObj = rs.getObject("voucher");
+            Integer voucher = voucherObj != null ? ((Number) voucherObj).intValue() : null;
+
+            return new Booking(
+                    rs.getInt("id"),
+                    rs.getInt("customer"),
+                    rs.getInt("room_type"),
+                    LocalDateTime.parse(rs.getString("checkin_date"), formatter),
+                    LocalDateTime.parse(rs.getString("checkout_date"), formatter),
+                    rs.getInt("price"),
+                    voucher,
+                    rs.getInt("final_price"),
+                    rs.getString("payment_status"),
+                    rs.getInt("has_checkedin") == 1,
+                    rs.getInt("has_checkedout") == 1
+            );
+        } catch (Exception e) {
+            throw new SQLException("Gagal mapping Booking: " + e.getMessage());
+        }
     }
+
 
     private static Review mapResultSetToReview(ResultSet rs) throws SQLException {
         return new Review(
