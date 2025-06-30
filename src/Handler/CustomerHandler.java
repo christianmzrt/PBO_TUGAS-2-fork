@@ -18,6 +18,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
+import java.util.ArrayList;
+import java.time.format.DateTimeFormatter;
+
+
 
 public class CustomerHandler {
     private static final Pattern EMAIL_PATTERN =
@@ -27,6 +31,12 @@ public class CustomerHandler {
 
     public static boolean handle(HttpExchange httpExchange, String method, String path, Map<String, Object> reqJson, Response res) {
         ObjectMapper objectMapper = new ObjectMapper();
+
+        // Normalize
+        path = path.split("\\?")[0];
+        path = path.replaceAll("/$", "");
+
+        System.out.println(">> METHOD: " + method + ", PATH: " + path);
 
         try {
             if (method.equals("GET") && path.equals("/customers")) {
@@ -65,10 +75,33 @@ public class CustomerHandler {
 
                 try {
                     List<Booking> bookings = CustomerService.getCustomerBookings(customerId);
-                    ApiResponse<List<Booking>> response = ApiResponse.success("Data booking customer berhasil diambil", bookings);
+
+                    // Kita ubah Booking ke Map manual biar tanggal aman (tanpa LocalDateTime)
+                    List<Map<String, Object>> simpleBookings = new ArrayList<>();
+
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+                    for (Booking booking : bookings) {
+                        Map<String, Object> map = new HashMap<>();
+                        map.put("id", booking.getId());
+                        map.put("customer", booking.getCustomer());
+                        map.put("roomType", booking.getRoomType());
+                        map.put("checkinDate", booking.getCheckinDate() != null ? booking.getCheckinDate().format(formatter) : null);
+                        map.put("checkoutDate", booking.getCheckoutDate() != null ? booking.getCheckoutDate().format(formatter) : null);
+                        map.put("price", booking.getPrice());
+                        map.put("voucher", booking.getVoucher());
+                        map.put("finalPrice", booking.getFinalPrice());
+                        map.put("paymentStatus", booking.getPaymentStatus());
+                        map.put("hasCheckedIn", booking.isHasCheckedin());
+                        map.put("hasCheckedOut", booking.isHasCheckedout());
+                        simpleBookings.add(map);
+                    }
+
+                    ApiResponse<List<Map<String, Object>>> response = ApiResponse.success("Data booking customer berhasil diambil", simpleBookings);
                     res.setBody(objectMapper.writeValueAsString(response));
                     res.send(HttpURLConnection.HTTP_OK);
                     return true;
+
                 } catch (SQLException e) {
                     e.printStackTrace();
                     res.setBody("{\"error\":\"Gagal mengambil data booking customer\"}");
@@ -76,6 +109,7 @@ public class CustomerHandler {
                     return true;
                 }
             }
+
 
             if (method.equals("GET") && path.matches("/customers/\\d+/reviews")) {
                 int customerId = Integer.parseInt(path.split("/")[2]);
