@@ -1,4 +1,4 @@
-package Tugas2;
+package Httpserver;
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;

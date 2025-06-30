@@ -1,6 +1,6 @@
 package Service;
 
-import Tugas2.DBConnection;
+import Httpserver.DBConnection;
 import model.Roomtype;
 
 import java.sql.Connection;

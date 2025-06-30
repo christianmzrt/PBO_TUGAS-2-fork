@@ -1,7 +1,7 @@
 package Service;
 
 import model.Voucher;
-import Tugas2.DBConnection;
+import Httpserver.DBConnection;
 
 import java.sql.*;
 import java.time.LocalDateTime;

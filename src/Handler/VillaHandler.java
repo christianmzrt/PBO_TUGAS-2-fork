@@ -12,13 +12,12 @@ import model.Booking;
 import model.Review;
 import model.Villa;
 import model.Roomtype;
-import Tugas2.DBConnection;
-import Tugas2.Response;
+import Httpserver.DBConnection;
+import Httpserver.Response;
 
 import java.net.HttpURLConnection;
 import java.sql.Connection;
 import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 

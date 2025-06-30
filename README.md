@@ -30,7 +30,7 @@ API RESTful untuk sistem pemesanan vila yang dibangun menggunakan Java. API ini 
 
 3. Jalankan server:
    ```bash
-   java -cp "lib/*:src" Tugas2
+   java -cp "lib/*:src" Httpserver
    ```
 
 4. Server akan berjalan di `http://localhost:8080`
