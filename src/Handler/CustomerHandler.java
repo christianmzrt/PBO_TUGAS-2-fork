@@ -8,11 +8,9 @@ import com.sun.net.httpserver.HttpExchange;
 import model.Customer;
 import model.Booking;
 import model.Review;
-import Tugas2.DBConnection;
-import Tugas2.Response;
+import Httpserver.Response;
 
 import java.net.HttpURLConnection;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
