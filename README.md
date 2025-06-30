@@ -95,7 +95,8 @@ X-API-Key: [rahasia123]
 - Headers: `X-API-Key: [rahasia123]`
 
 **Screenshot:**
-![GET All Villas](![image](https://github.com/user-attachments/assets/f0dea349-2ab9-4fa7-acad-a75e73d0a7bb))
+![GET All Villas]
+(![image](https://github.com/user-attachments/assets/f0dea349-2ab9-4fa7-acad-a75e73d0a7bb))
 
 #### 2. GET Villa by ID
 **Request:**
