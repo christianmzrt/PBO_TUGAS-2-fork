@@ -350,7 +350,7 @@ public class VillaHandler {
                 }
             }
 
-            if (method.equals("GET") && path.matches("^/villas/\\d+/roomtype$")) {
+            if (method.equals("GET") && path.matches("^/villas/\\d+/rooms$")) {
                 int villaId = Integer.parseInt(path.split("/")[2]);
                 List<Roomtype> roomtype = RoomTypeService.getAllRoomTypes(villaId);
                 ApiResponse<List<Roomtype>> response = ApiResponse.success("Data villa berhasil diambil", roomtype);
