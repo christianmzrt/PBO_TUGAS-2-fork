@@ -532,6 +532,16 @@ X-API-Key: [rahasia123]
 ![Error 401]
 ![image](https://github.com/user-attachments/assets/10c1729a-3bc3-45a8-b96d-e5630ae30f72)
 
+### 4. Error 500 - Internal Server Error (Simulasi Kesalahan Server)
+**Request:**
+- Method: GET
+- URL: `http://localhost:8080/villas`
+- Headers: `X-API-Key: [rahasia123]`
+
+**Screenshot:**
+![Error 500]
+![image](![image](https://github.com/user-attachments/assets/a4a4ae09-ac7a-4082-9166-e8311799ac0f))
+
 ## 🗄️ Database Structure
 
 API menggunakan SQLite database dengan entitas:
