@@ -560,14 +560,16 @@ API menggunakan SQLite database dengan entitas:
 - **HTTP Server**: Built-in Java HTTP server
 - **Postman**: API testing tool
 
-## 🚨 HTTP Status Codes
+## 🚨 Kode Status HTTP
 
-- `200 OK`: Request berhasil
-- `201 Created`: Resource berhasil dibuat
-- `400 Bad Request`: Data tidak valid
-- `401 Unauthorized`: API key tidak valid
-- `404 Not Found`: Resource tidak ditemukan
-- `500 Internal Server Error`: Error server
+| Kode | Arti |
+|------|------|
+| 200 | OK - Permintaan berhasil |
+| 201 | Created - Sumber daya berhasil dibuat |
+| 400 | Bad Request - Permintaan tidak valid |
+| 401 | Unauthorized - API Key tidak sah |
+| 404 | Not Found - Sumber daya tidak ditemukan |
+| 500 | Internal Server Error - Kesalahan dari sisi server |
 
 
 **Mata Kuliah**: Pemrograman Berorientasi Objek  
