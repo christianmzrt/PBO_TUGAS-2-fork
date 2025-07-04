@@ -554,11 +554,11 @@ API menggunakan SQLite database dengan entitas:
 
 ## 🔧 Teknologi yang Digunakan
 
-- **Java 11+**: Bahasa pemrograman utama
-- **SQLite**: Database
-- **JSON**: Format data exchange
-- **HTTP Server**: Built-in Java HTTP server
-- **Postman**: API testing tool
+- **Java 11+** — Bahasa pemrograman utama
+- **SQLite** — Database ringan
+- **Postman** — Pengujian API
+- **Jackson** — Library parsing JSON
+- **Built-in Java HTTPServer** — Server HTTP minimalis dari Java
 
 ## 🚨 Kode Status HTTP
 
@@ -571,8 +571,9 @@ API menggunakan SQLite database dengan entitas:
 | 404 | Not Found - Sumber daya tidak ditemukan |
 | 500 | Internal Server Error - Kesalahan dari sisi server |
 
+## 🏫 Informasi Akademik
 
-**Mata Kuliah**: Pemrograman Berorientasi Objek  
-**Dosen**: Wayan Oger Vihikan, S.T.I, M.I.T.  
-**Semester**: 2  
-**Tahun**: 2025
+- **Mata Kuliah**: Pemrograman Berorientasi Objek (PBO)  
+- **Dosen Pengampu**: Wayan Oger Vihikan, S.T.I, M.I.T.  
+- **Semester**: Genap (Semester 2)  
+- **Tahun Ajaran**: 2025
